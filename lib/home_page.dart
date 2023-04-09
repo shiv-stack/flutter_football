@@ -1,5 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sports/calen.dart';
+import 'package:flutter_sports/https/services.dart';
+import 'package:flutter_sports/models/live_score_model.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,6 +14,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Services().getLiveScore();
+  }
+
   int myindex = 0;
   @override
   Widget build(BuildContext context) {
@@ -44,15 +54,30 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 10,
             ),
-            SizedBox(
-              height: 200,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  return LiveMatchCard();
-                },
-              ),
+            FutureBuilder(
+              future: Services().getLiveScore(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  );
+                } else if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.hasData) {
+                  return SizedBox(
+                    height: 200,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: snapshot.data!.result.length,
+                      itemBuilder: (context, index) {
+                        var result = snapshot.data!.result[index];
+                        return LiveMatchCard(result: result);
+                      },
+                    ),
+                  );
+                } else {
+                  return Text('No Data Available');
+                }
+              },
             ),
             const SizedBox(
               height: 10,
@@ -64,13 +89,28 @@ class _HomePageState extends State<HomePage> {
               title: Text('Today match'),
               trailing: Icon(Icons.navigate_next_outlined),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  return TodayMatchWidget();
-                },
-              ),
+            FutureBuilder(
+              future: Services().getLiveScore(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  );
+                } else if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.hasData) {
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.result.length,
+                      itemBuilder: (context, index) {
+                        var result = snapshot.data!.result[index];
+                        return TodayMatchWidget(result: result);
+                      },
+                    ),
+                  );
+                } else {
+                  return Text('No Data Available');
+                }
+              },
             ),
           ],
         ),
@@ -124,7 +164,10 @@ class _HomePageState extends State<HomePage> {
 class TodayMatchWidget extends StatelessWidget {
   const TodayMatchWidget({
     super.key,
+    required this.result,
   });
+
+  final Result result;
 
   @override
   Widget build(BuildContext context) {
@@ -139,17 +182,43 @@ class TodayMatchWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('N Forest'),
-            Icon(Icons.trending_neutral),
+            SizedBox(
+              width: 50,
+              child: Text(
+                result.eventHomeTeam,
+                style:
+                    const TextStyle(fontSize: 10, overflow: TextOverflow.clip),
+              ),
+            ),
+            CircleAvatar(
+              backgroundImage: NetworkImage(
+                result.homeTeamLogo,
+              ),
+              backgroundColor: Colors.transparent,
+              radius: 20,
+            ),
             Container(
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.green.shade600, width: 2),
                   color: Colors.green.shade400,
                   borderRadius: BorderRadius.circular(20)),
-              child: const Text('06:30'),
+              child: Text(result.eventTime),
             ),
-            Icon(Icons.nat_outlined),
-            Text('Liverpool'),
+            CircleAvatar(
+              backgroundImage: NetworkImage(
+                result.awayTeamLogo,
+              ),
+              backgroundColor: Colors.transparent,
+              radius: 20,
+            ),
+            SizedBox(
+              width: 50,
+              child: Text(
+                result.eventAwayTeam,
+                style:
+                    const TextStyle(fontSize: 10, overflow: TextOverflow.clip),
+              ),
+            ),
           ],
         ));
   }
@@ -158,7 +227,9 @@ class TodayMatchWidget extends StatelessWidget {
 class LiveMatchCard extends StatelessWidget {
   const LiveMatchCard({
     super.key,
+    required this.result,
   });
+  final Result result;
 
   @override
   Widget build(BuildContext context) {
@@ -172,29 +243,55 @@ class LiveMatchCard extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(20))),
       child: Column(
         children: [
-          Text('Stamford Bridge'),
-          Text('week 10'),
+          Text(result.leagueName),
+          Text(result.leagueRound),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
-                children: [Icon(Icons.tab), Text('Chelsea'), Text('Home')],
+                children: [
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      result.homeTeamLogo,
+                    ),
+                    backgroundColor: Colors.transparent,
+                    radius: 30,
+                  ),
+                  Text(result.eventHomeTeam),
+                  const Text('Home')
+                ],
               ),
               Column(
                 children: [
-                  Text('1 : 1'),
+                  Text(result.eventFinalResult),
                   Container(
+                    width: 60,
                     decoration: BoxDecoration(
                         border:
                             Border.all(color: Colors.green.shade600, width: 2),
                         color: Colors.green.shade400,
                         borderRadius: BorderRadius.circular(20)),
-                    child: const Text('90+4'),
+                    child: Text(
+                      result.eventStatus == 'Finished'
+                          ? '90'
+                          : result.eventStatus,
+                      textAlign: TextAlign.center,
+                    ),
                   )
                 ],
               ),
               Column(
-                children: [Icon(Icons.tab), Text('Man Utd'), Text('Away')],
+                children: [
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      result.awayTeamLogo,
+                    ),
+                    backgroundColor: Colors.transparent,
+                    radius: 30,
+                  ),
+                  Text(result.eventAwayTeam),
+                  const Text('Away')
+                ],
               ),
             ],
           )
