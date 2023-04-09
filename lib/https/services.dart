@@ -3,8 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter_sports/models/live_score_model.dart';
 
-const String apiKey =
-    'b393d35a95cd406d8e162c139a6c39b46993ac37e042015c8335699dd8996ad6';
+const String apiKey = '';
 
 class Services {
   final _dio = Dio();

@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 10,
             ),
-            ListTile(
+            const ListTile(
               iconColor: Colors.white,
               textColor: Colors.white,
               leading: Icon(Icons.cabin),
@@ -238,9 +238,13 @@ class LiveMatchCard extends StatelessWidget {
       margin: const EdgeInsets.all(10),
       height: 200,
       width: MediaQuery.of(context).size.width * .9,
-      decoration: const BoxDecoration(
-          color: Colors.purple,
-          borderRadius: BorderRadius.all(Radius.circular(20))),
+      decoration: BoxDecoration(
+          color: Colors.purple.shade400,
+          image: const DecorationImage(
+              alignment: Alignment.bottomCenter,
+              opacity: 0.3,
+              image: AssetImage('assets/lion.png')),
+          borderRadius: const BorderRadius.all(Radius.circular(20))),
       child: Column(
         children: [
           Text(result.leagueName),
@@ -248,22 +252,29 @@ class LiveMatchCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      result.homeTeamLogo,
+              SizedBox(
+                width: 100,
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        result.homeTeamLogo,
+                      ),
+                      backgroundColor: Colors.transparent,
+                      radius: 30,
                     ),
-                    backgroundColor: Colors.transparent,
-                    radius: 30,
-                  ),
-                  Text(result.eventHomeTeam),
-                  const Text('Home')
-                ],
+                    Text(result.eventHomeTeam),
+                    const Text('Home')
+                  ],
+                ),
               ),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(result.eventFinalResult),
+                  Text(
+                    result.eventFinalResult,
+                    textAlign: TextAlign.center,
+                  ),
                   Container(
                     width: 60,
                     decoration: BoxDecoration(
@@ -280,18 +291,25 @@ class LiveMatchCard extends StatelessWidget {
                   )
                 ],
               ),
-              Column(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      result.awayTeamLogo,
+              SizedBox(
+                width: 100,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        result.awayTeamLogo,
+                      ),
+                      backgroundColor: Colors.transparent,
+                      radius: 30,
                     ),
-                    backgroundColor: Colors.transparent,
-                    radius: 30,
-                  ),
-                  Text(result.eventAwayTeam),
-                  const Text('Away')
-                ],
+                    Text(
+                      result.eventAwayTeam,
+                      textAlign: TextAlign.center,
+                    ),
+                    const Text('Away')
+                  ],
+                ),
               ),
             ],
           )
