@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sports/calen.dart';
 import 'package:flutter_sports/https/services.dart';
 import 'package:flutter_sports/models/live_score_model.dart';
+import 'package:flutter_sports/summary.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
@@ -172,6 +173,7 @@ class TodayMatchWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
         padding: const EdgeInsets.all(15),
         margin: const EdgeInsets.all(10),
         height: 80,
@@ -233,87 +235,95 @@ class LiveMatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      margin: const EdgeInsets.all(10),
-      height: 200,
-      width: MediaQuery.of(context).size.width * .9,
-      decoration: BoxDecoration(
-          color: Colors.purple.shade400,
-          image: const DecorationImage(
-              alignment: Alignment.bottomCenter,
-              opacity: 0.3,
-              image: AssetImage('assets/lion.png')),
-          borderRadius: const BorderRadius.all(Radius.circular(20))),
-      child: Column(
-        children: [
-          Text(result.leagueName),
-          Text(result.leagueRound),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: 100,
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        result.homeTeamLogo,
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Summary()),
+            );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.all(10),
+        height: 200,
+        width: MediaQuery.of(context).size.width * .9,
+        decoration: BoxDecoration(
+            color: Colors.purple.shade400,
+            image: const DecorationImage(
+                alignment: Alignment.bottomCenter,
+                opacity: 0.3,
+                image: AssetImage('assets/lion.png')),
+            borderRadius: const BorderRadius.all(Radius.circular(20))),
+        child: Column(
+          children: [
+            Text(result.leagueName),
+            Text(result.leagueRound),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          result.homeTeamLogo,
+                        ),
+                        backgroundColor: Colors.transparent,
+                        radius: 30,
                       ),
-                      backgroundColor: Colors.transparent,
-                      radius: 30,
-                    ),
-                    Text(result.eventHomeTeam),
-                    const Text('Home')
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    result.eventFinalResult,
-                    textAlign: TextAlign.center,
+                      Text(result.eventHomeTeam),
+                      const Text('Home')
+                    ],
                   ),
-                  Container(
-                    width: 60,
-                    decoration: BoxDecoration(
-                        border:
-                            Border.all(color: Colors.green.shade600, width: 2),
-                        color: Colors.green.shade400,
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Text(
-                      result.eventStatus == 'Finished'
-                          ? '90'
-                          : result.eventStatus,
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(
-                width: 100,
-                child: Column(
+                ),
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        result.awayTeamLogo,
-                      ),
-                      backgroundColor: Colors.transparent,
-                      radius: 30,
-                    ),
                     Text(
-                      result.eventAwayTeam,
+                      result.eventFinalResult,
                       textAlign: TextAlign.center,
                     ),
-                    const Text('Away')
+                    Container(
+                      width: 60,
+                      decoration: BoxDecoration(
+                          border:
+                              Border.all(color: Colors.green.shade600, width: 2),
+                          color: Colors.green.shade400,
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Text(
+                        result.eventStatus == 'Finished'
+                            ? '90'
+                            : result.eventStatus,
+                        textAlign: TextAlign.center,
+                      ),
+                    )
                   ],
                 ),
-              ),
-            ],
-          )
-        ],
+                SizedBox(
+                  width: 100,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          result.awayTeamLogo,
+                        ),
+                        backgroundColor: Colors.transparent,
+                        radius: 30,
+                      ),
+                      Text(
+                        result.eventAwayTeam,
+                        textAlign: TextAlign.center,
+                      ),
+                      const Text('Away')
+                    ],
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
